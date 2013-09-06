@@ -1,0 +1,13 @@
+### Initial Release ###
+2013-09-05 | ConvertDateTimes class created with init and refresh methods.
+2013-09-05 | constructor takes arg1 as a Callback
+### VERSION 0.1 ###
+2013-09-06 | moved variable r assignment of empty object into for loop instead of checking if r has property count greater than zero
+2013-09-06 | with the r variable test Object.keys(r).length > 0 removed we are now compatible with IE8
+2013-09-06 | added private property allow to store allowed default formats to render
+2013-09-06 | added public property options to store the default format to render
+2013-09-06 | constructor now takes also arg1 as an Object and applied property values to public options property
+2013-09-06 | constructor now takes arg1 as a string value and will set the public property options.format
+2013-09-06 | constructor now takes also an arg2 as a Callback for when using arg1 as a property setter
+2013-09-06 | added public method setFormat to easily assign the public property options.format value
+2013-09-06 | bug fix in private function _set within init method, now uses Date.parse() to properly handle the time element datetime attribute extended ISO 8601 (see RFC 3987)
