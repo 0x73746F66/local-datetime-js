@@ -11,3 +11,4 @@
 2013-09-06 | constructor now takes also an arg2 as a Callback for when using arg1 as a property setter
 2013-09-06 | added public method setFormat to easily assign the public property options.format value
 2013-09-06 | bug fix in private function _set within init method, now uses Date.parse() to properly handle the time element datetime attribute extended ISO 8601 (see RFC 3987)
+### VERSION 0.2 ###
