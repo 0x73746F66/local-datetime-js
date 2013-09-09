@@ -1,14 +1,37 @@
 ### Initial Release ###
 2013-09-05 | ConvertDateTimes class created with init and refresh methods.
 2013-09-05 | constructor takes arg1 as a Callback
-### VERSION 0.1 ###
-2013-09-06 | moved variable r assignment of empty object into for loop instead of checking if r has property count greater than zero
-2013-09-06 | with the r variable test Object.keys(r).length > 0 removed we are now compatible with IE8
+### VERSION 0.1 released ###
+2013-09-06 | moved variable r (now named tempDateObj) assignment of empty object into for loop instead of checking if r has property count greater than zero
+2013-09-06 | with the r (now named tempDateObj) variable test Object.keys(r).length > 0 removed we are now compatible with IE8
 2013-09-06 | added private property allow to store allowed default formats to render
 2013-09-06 | added public property options to store the default format to render
 2013-09-06 | constructor now takes also arg1 as an Object and applied property values to public options property
 2013-09-06 | constructor now takes arg1 as a string value and will set the public property options.format
 2013-09-06 | constructor now takes also an arg2 as a Callback for when using arg1 as a property setter
 2013-09-06 | added public method setFormat to easily assign the public property options.format value
-2013-09-06 | bug fix in private function _set within init method, now uses Date.parse() to properly handle the time element datetime attribute extended ISO 8601 (see RFC 3987)
-### VERSION 0.2 ###
+2013-09-06 | bug fix in private function _set within .init() method, now uses Date.parse() to properly handle the time element datetime attribute extended ISO 8601 (see RFC 3987)
+### VERSION 0.2 released ###
+2013-09-09 | ConvertDateTimes Initialization is now assigned to a variable to allow Instance methods assigned via ConvertDateTimes.prototype
+2013-09-09 | moved the class methods to the ConvertDateTimes.prototype declaration
+2013-09-09 | now capable of extensions via ConvertDateTimes.fn plugins/add-on
+2013-09-09 | renamed r variable to tempDateObj for readability
+2013-09-09 | introduced timezoneOffset public property
+2013-09-09 | introduced .getFormat() method to return the current set default format used
+2013-09-09 | introduced .getTimeZoneOffsetInHours() method to return the detected user timezone offset in hours
+2013-09-09 | semantic change for .refresh() method to use elements property which is the scope of its class instance.
+2013-09-09 | the elements.times property now implements and extends the JavaScript Date Object methods
+2013-09-09 | private function _set within .init() method updated to write new methods to elements.times
+2013-09-09 | added .getFullDay() new method for elements.times
+2013-09-09 | added .getDayAbbr() new method for elements.times
+2013-09-09 | added .getFullMonth() new method for elements.times
+2013-09-09 | added .getMonthAbbr() new method for elements.times
+2013-09-09 | added .to12HourTimeString() new method for elements.times
+2013-09-09 | added .to24HourTimeString() new method for elements.times
+2013-09-09 | added .lastday() new method for elements.times
+2013-09-09 | added DAYNAMES property to elements.times for the new .getFullDay() and .getDayAbbr() methods
+2013-09-09 | added MONTHNAMES property to elements.times for the new .getFullMonth() and .getMonthAbbr() methods
+2013-09-09 | three new default formats; time, time12, and time24.
+2013-09-09 | bug fix re-running .init() now resets elements property appropriately.
+2013-09-09 | bug fix for .refresh() method, now uses the set default format appropriately
+### VERSION 0.3 released ###
