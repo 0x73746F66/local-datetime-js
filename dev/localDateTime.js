@@ -1,6 +1,6 @@
 /**
  * @class localDateTime
- * @verson 0.3
+ * @verson 0.4
  * @author Christopher D Langton <chris@codewiz.biz>
  * @classDescription Convert Dates and Times to users local
  * @compatibility:
@@ -17,51 +17,64 @@
  */
 'use strict';
 var ConvertDateTimes = function(arg,fn) {
-	/**
-	 * @property elements
-	 * @type {Array}
-	 * @access public
-	 */
-    this.elements = [];
-	/**
-	 * @property options
-	 * @type {Object}
-	 * @access public
-	 */
-    this.options = {
-		format:	'local',
-		allow: ['original','full','local','utc','iso','time','time12','time24']
-	};
-	/**
-	 * @property timezoneOffset
-	 * @type {Integer}
-	 * @access public
-	 */
-    this.timezoneOffset = (new Date()).getTimezoneOffset() / 60;
-	// Initialization
-    if ('object' === typeof arg ){
-		for (var key in arg) {
-			if (arg.hasOwnProperty(key)) {
-				if ( key === 'format' ) {
-					this.setFormat(arg[key]);
+	try{
+		/**
+		 * @property elements
+		 * @type {Array}
+		 * @access public
+		 */
+		this.elements = [];
+		/**
+		 * @property options
+		 * @type {Object}
+		 * @access public
+		 */
+		this.options = {
+			format: 'local',
+			enableTitle: true,
+			titleFormat: 'full',
+			allow: ['milliseconds','full','local','utc','iso','time','time12','time24']
+		};
+		/**
+		 * @property timezoneOffset
+		 * @type {Integer}
+		 * @access public
+		 */
+		this.timezoneOffset = (new Date()).getTimezoneOffset() / 60;
+		// Initialization
+		if ('object' === typeof arg ){
+			for (var key in arg) {
+				if (arg.hasOwnProperty(key)) {
+					if ( key === 'format' ) {
+						this.defaultFormat(arg[key]);
+					}
+					if ( key === 'enableTitle' ) {
+						this.enableTitle(arg[key]);
+					}
+					if ( key === 'titleFormat' ) {
+						this.titleFormat(arg[key]);
+					}
 				}
 			}
+		} else if ('string' === typeof arg ) {
+			this.defaultFormat(arg);
 		}
-    } else if ('string' === typeof arg ) {
-		for (var i = 0, j = this.options.allow.length; i < j; i++) {
-			if (arg === this.options.allow[i]) {
-				this.options.format = arg;
+		if ('function' === typeof arg ) {
+			this.init(arg);
+		} else {
+			 if ('function' === typeof fn ) {
+				this.init(fn);
+			} else { 
+				this.init();
 			}
 		}
-    }
-	if ('function' === typeof arg ) {
-		this.init(arg);
-	} else {
-		 if ('function' === typeof fn ) {
-			this.init(fn);
-		} else { 
-			this.init();
-		}
+	} catch (err) {
+		this.errors.push({
+			datetime: (new Date()).toLocaleString(),
+			type: err.name,
+			message: err.message
+		});
+		return true;
 	}
 };
 // Instance methods
@@ -73,170 +86,207 @@ ConvertDateTimes.fn = ConvertDateTimes.prototype = {
 	 * @return {Object} Returns ConvertDateTimes for method chaining
 	 */
     init: function(fn){
-		/**
-		 * @property timeElements
-		 * @type {Array}
-		 * @access private
-		 */
-		var timeElements = document.getElementsByTagName('time');
-		/**
-		 * @property tempDateObj implements and extends JavaScript Date object methods
-		 * @type {Object}
-		 * @access private
-		 */
-        var tempDateObj = {
-			getDate: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getDate();
-			},
-			getDay: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getDay();
-			},
-			getFullYear: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getFullYear();
-			},
-			getHours: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getHours();
-			},
-			getMilliseconds: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getMilliseconds();
-			},
-			getMinutes: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getMinutes();
-			},
-			getMonth: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getMonth();
-			},
-			getSeconds: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getSeconds();
-			},
-			getTime: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getTime();
-			},
-			getTimezoneOffset: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getTimezoneOffset();
-			},
-			getUTCDate: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getUTCDate();
-			},
-			getUTCDay: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getUTCDay();
-			},
-			getUTCFullYear: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getUTCFullYear();
-			},
-			getUTCHours: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getUTCHours();
-			},
-			getUTCMilliseconds: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getUTCMilliseconds();
-			},
-			getUTCMinutes: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getUTCMinutes();
-			},
-			getUTCMonth: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getUTCMonth();
-			},
-			getUTCSeconds: function(){
-				return ( new Date( Date.parse( this.original ) ) ).getUTCSeconds();
-			},
-			toString: function(){
-				return ( new Date( Date.parse( this.original ) ) ).toString();
-			},
-			toLocaleString: function(){
-				return ( new Date( Date.parse( this.original ) ) ).toLocaleString();
-			},
-			toUTCString: function(){
-				return ( new Date( Date.parse( this.original ) ) ).toUTCString();
-			},
-			toISOString: function(){
-				return ( new Date( Date.parse( this.original ) ) ).toISOString();
-			},
-			toTimeString: function(){
-				return ( new Date( Date.parse( this.original ) ) ).toTimeString();
-			},
-			DAYNAMES: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-			MONTHNAMES: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-			getFullDay: function() {
-			  return this.DAYNAMES[this.getDay()];
-			},
-			getDayAbbr: function() {
-			  return this.getFullDay().slice(0, 3);
-			},
-			getFullMonth: function() {
-			  return this.MONTHNAMES[this.getMonth()];
-			},
-			getMonthAbbr: function() {
-			  return this.getFullMonth().slice(0, 3);
-			},
-			to12HourTimeString: function () {
-			  var h = this.getHours();
-			  var m = "0" + this.getMinutes();
-			  var s = "0" + this.getSeconds();
-			  var ap = "am";
-			  if (h >= 12) {
-				ap = "pm";
-				if (h >= 13){
-				  h -= 12;
+		this.errors = [];
+		try{
+			/**
+			 * @property timeElements
+			 * @type {Array}
+			 * @access private
+			 */
+			var timeElements = document.getElementsByTagName('time');
+			/**
+			 * @property tempDateObj implements and extends JavaScript Date object methods
+			 * @type {Object}
+			 * @access private
+			 */
+			var tempDateObj = function(){
+				return {
+					getDate: function(){
+						return ( new Date( this.milliseconds ) ).getDate();
+					},
+					getDay: function(){
+						return ( new Date( this.milliseconds ) ).getDay();
+					},
+					getFullYear: function(){
+						return ( new Date( this.milliseconds ) ).getFullYear();
+					},
+					getHours: function(){
+						return ( new Date( this.milliseconds ) ).getHours();
+					},
+					getMilliseconds: function(){
+						return ( new Date( this.milliseconds ) ).getMilliseconds();
+					},
+					getMinutes: function(){
+						return ( new Date( this.milliseconds ) ).getMinutes();
+					},
+					getMonth: function(){
+						return ( new Date( this.milliseconds ) ).getMonth();
+					},
+					getSeconds: function(){
+						return ( new Date( this.milliseconds ) ).getSeconds();
+					},
+					getTime: function(){
+						return ( new Date( this.milliseconds ) ).getTime();
+					},
+					getTimezoneOffset: function(){
+						return ( new Date( this.milliseconds ) ).getTimezoneOffset();
+					},
+					getUTCDate: function(){
+						return ( new Date( this.milliseconds ) ).getUTCDate();
+					},
+					getUTCDay: function(){
+						return ( new Date( this.milliseconds ) ).getUTCDay();
+					},
+					getUTCFullYear: function(){
+						return ( new Date( this.milliseconds ) ).getUTCFullYear();
+					},
+					getUTCHours: function(){
+						return ( new Date( this.milliseconds ) ).getUTCHours();
+					},
+					getUTCMilliseconds: function(){
+						return ( new Date( this.milliseconds ) ).getUTCMilliseconds();
+					},
+					getUTCMinutes: function(){
+						return ( new Date( this.milliseconds ) ).getUTCMinutes();
+					},
+					getUTCMonth: function(){
+						return ( new Date( this.milliseconds ) ).getUTCMonth();
+					},
+					getUTCSeconds: function(){
+						return ( new Date( this.milliseconds ) ).getUTCSeconds();
+					},
+					toString: function(){
+						return ( new Date( this.milliseconds ) ).toString();
+					},
+					toLocaleString: function(){
+						return ( new Date( this.milliseconds ) ).toLocaleString();
+					},
+					toUTCString: function(){
+						return ( new Date( this.milliseconds ) ).toUTCString();
+					},
+					toISOString: function(){
+						return ( new Date( this.milliseconds ) ).toISOString();
+					},
+					toTimeString: function(){
+						return ( new Date( this.milliseconds ) ).toTimeString();
+					},
+					DAYNAMES: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+					MONTHNAMES: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+					getFullDay: function() {
+					  return this.DAYNAMES[this.getDay()];
+					},
+					getDayAbbr: function() {
+					  return this.getFullDay().slice(0, 3);
+					},
+					getFullMonth: function() {
+					  return this.MONTHNAMES[this.getMonth()];
+					},
+					getMonthAbbr: function() {
+					  return this.getFullMonth().slice(0, 3);
+					},
+					to12HourTimeString: function () {
+					  var h = this.getHours();
+					  var m = "0" + this.getMinutes();
+					  var s = "0" + this.getSeconds();
+					  var ap = "am";
+					  if (h >= 12) {
+						ap = "pm";
+						if (h >= 13){
+						  h -= 12;
+						}
+					  } else if (h == 0){
+						h = 12;
+					  }
+					  h = "0" + h;
+					  return h.slice(-2) + ":" +
+						m.slice(-2) + ":" +
+						s.slice(-2) + " " + ap;
+					},
+					to24HourTimeString: function () {
+					  var h = "0" + this.getHours();
+					  var m = "0" + this.getMinutes();
+					  var s = "0" + this.getSeconds();
+					  return h.slice(-2) + ":" + m.slice(-2) + ":" + s.slice(-2);
+					},
+					lastday: function() {
+					  var d = new Date(this.getFullYear(), this.getMonth() + 1, 0);
+					  return d.getDate();
+					},
+					full: function(){ return this.toString(); },
+					local: function(){ return this.toLocaleString(); },
+					utc: function(){ return this.toUTCString(); },
+					iso: function(){ return this.toISOString(); },
+					time: function(){ return this.toTimeString(); },
+					time12: function(){ return this.to12HourTimeString(); },
+					time24: function(){ return this.to24HourTimeString(); }
+				};
+			};
+			var dateObj = new tempDateObj();
+			var nowObj = new tempDateObj();
+			var _set = function (dateStr) {
+			  dateObj.milliseconds = Date.parse( dateStr );
+			  nowObj.milliseconds = Date.now();
+			};
+			if (this.elements.length > 0) this.elements = [];
+			for (var i = 0, j = timeElements.length; i < j; i++) {
+			  _set(timeElements[i].getAttribute('datetime'));
+			  if ('function' === typeof fn ) {
+				fn(timeElements[i],dateObj,nowObj);
+			  } else if ( timeElements[i].hasAttribute("data-bind") ) {
+				eval('var data='+timeElements[i].getAttribute("data-bind"));
+				if ( 'object' === typeof data && 'undefined' !== typeof data.format && this.isValidFormat(data.format) ) {
+					timeElements[i].innerHTML = dateObj[data.format]();
+				} else {
+					timeElements[i].innerHTML = dateObj[this.options.format]();
 				}
-			  } else if (h == 0){
-				h = 12;
+				if ( true === this.options.enableTitle ) {
+					if ( 'object' === typeof data && 'undefined' !== typeof data.titleFormat && this.isValidFormat(data.titleFormat) ) {
+						timeElements[i].title = dateObj[data.titleFormat]();
+					} else {
+						timeElements[i].title = dateObj[this.options.titleFormat]();
+					}
+				}
+			  } else {
+				timeElements[i].innerHTML = dateObj[this.options.format]();
+				if ( true === this.options.enableTitle ) {
+					timeElements[i].title = dateObj[this.options.titleFormat]();
+				}
 			  }
-			  h = "0" + h;
-			  return h.slice(-2) + ":" +
-				m.slice(-2) + ":" +
-				s.slice(-2) + " " + ap;
-			},
-			to24HourTimeString: function () {
-			  var h = "0" + this.getHours();
-			  var m = "0" + this.getMinutes();
-			  var s = "0" + this.getSeconds();
-			  return h.slice(-2) + ":" + m.slice(-2) + ":" + s.slice(-2);
-			},
-			lastday: function() {
-			  var d = new Date(this.getFullYear(), this.getMonth() + 1, 0);
-			  return d.getDate();
+			  this.elements.push({
+				  node: timeElements[i],
+				  times: dateObj,
+				  now: nowObj
+			  });
 			}
-	    };
-        var _set = function (dateStr) {
-          tempDateObj.original = dateStr;
-          tempDateObj.full = (tempDateObj.toString());
-          tempDateObj.local = (tempDateObj.toLocaleString());
-          tempDateObj.utc = (tempDateObj.toUTCString());
-          tempDateObj.iso = (tempDateObj.toISOString());
-		  tempDateObj.time = (tempDateObj.toTimeString());
-		  tempDateObj.time12 = (tempDateObj.to12HourTimeString());
-		  tempDateObj.time24 = (tempDateObj.to24HourTimeString());
-        };
-		if (this.elements.length > 0) this.elements = [];
-        for (var i = 0, j = timeElements.length; i < j; i++) {
-          _set(timeElements[i].getAttribute('datetime'));
-          if ('function' === typeof fn ) fn(timeElements[i],tempDateObj);
-            else timeElements[i].innerHTML = tempDateObj[this.options.format];
-          this.elements.push({
-              node: timeElements[i],
-              times: tempDateObj
-          });
-        }
+		} catch (err) {
+			this.errors.push({
+				datetime: (new Date()).toLocaleString(),
+				type: err.name,
+				message: err.message
+			});
+			return true;
+		}
 		return this;
     },
-	/**
-	 * @method setFormat
-	 * @param {String} format A default date and time render type, use one of ['original','full','local','utc','iso']
-	 * @access public
-	 * @return {Object} Returns ConvertDateTimes for method chaining
-	 */
-    setFormat: function(format){
+    isValidFormat: function(format){
 		for (var i = 0, j = this.options.allow.length; i < j; i++)
-        if (format === this.options.allow[i]) this.options.format = format;
+        if (format === this.options.allow[i]) return true;
+		return false;
+	},
+    defaultFormat: function(format){
+		if ( 'undefined' === typeof format ) return this.options.format;
+		if ( this.isValidFormat(format) ) this.options.format = format;
 		return this;
 	},
-	/**
-	 * @method getFormat
-	 * @access public
-	 * @return {String} Returns Default date and time format used by this class
-	 */
-    getFormat: function(){
-		return this.options.format;
+    titleFormat: function(format){
+		if ( 'undefined' === typeof format ) return this.options.titleFormat;
+		if ( this.isValidFormat(format) ) this.options.titleFormat = format;
+		return this;
+	},
+    enableTitle: function(opt){
+		if ( 'undefined' === typeof opt ) return this.options.enableTitle;
+        if ( 'boolean' === typeof opt ) this.options.enableTitle = opt;
+		return this;
 	},
 	/**
 	 * @method getTimeZoneOffsetInHours
@@ -252,52 +302,38 @@ ConvertDateTimes.fn = ConvertDateTimes.prototype = {
 	 * @return {Object} Returns ConvertDateTimes for method chaining
 	 */
     refresh: function(){
-		var to12HourTimeString = function (dateTime) {
-		  var h = dateTime.getHours();
-		  var m = "0" + dateTime.getMinutes();
-		  var s = "0" + dateTime.getSeconds();
-		  var ap = "am";
-		  if (h >= 12) {
-			ap = "pm";
-			if (h >= 13){
-			  h -= 12;
+		try{
+			for (var i = 0, j = this.elements.length; i < j; i++) {
+				this.elements[i].now.milliseconds = Date.now();
+				if ( this.elements[i].node.hasAttribute("data-bind") ) {
+					eval('var data='+this.elements[i].node.getAttribute("data-bind"));
+					if ( 'object' === typeof data && 'undefined' !== typeof data.format && this.isValidFormat(data.format) ) {
+						this.elements[i].node.innerHTML = dateObj[data.format]();
+					} else {
+						this.elements[i].node.innerHTML = dateObj[this.options.format]();
+					}
+					if ( true === this.options.enableTitle ) {
+						if ( 'object' === typeof data && 'undefined' !== typeof data.titleFormat && this.isValidFormat(data.titleFormat) ) {
+							this.elements[i].node.title = dateObj[data.titleFormat]();
+						} else {
+							this.elements[i].node.title = dateObj[this.options.titleFormat]();
+						}
+					}
+				} else {
+					this.elements[i].node.innerHTML = this.elements[i].now[this.options.format]();
+					if ( true === this.options.enableTitle ) {
+						this.elements[i].node.title = this.elements[i].now[this.options.titleFormat]();
+					}
+				}
 			}
-		  } else if (h == 0){
-			h = 12;
-		  }
-		  h = "0" + h;
-		  return h.slice(-2) + ":" +
-			m.slice(-2) + ":" +
-			s.slice(-2) + " " + ap;
-		};
-		var to24HourTimeString = function (dateTime) {
-		  var h = "0" + dateTime.getHours();
-		  var m = "0" + dateTime.getMinutes();
-		  var s = "0" + dateTime.getSeconds();
-		  return h.slice(-2) + ":" + m.slice(-2) + ":" + s.slice(-2);
-		};
-		var dateTimeStr;
-		var dateTime = new Date();
-		if ( this.options.format === "full" ) {
-			dateTimeStr = dateTime.toString();
-		} else if ( this.options.format === "local" ) {
-			dateTimeStr = dateTime.toLocaleString();
-		} else if ( this.options.format === "utc" ) {
-			dateTimeStr = dateTime.toUTCString();
-		} else if ( this.options.format === "iso" ) {
-			dateTimeStr = dateTime.toISOString();
-		} else if ( this.options.format === "time" ) {
-			dateTimeStr = dateTime.toTimeString();
-		} else if ( this.options.format === "time12" ) {
-			dateTimeStr = to12HourTimeString(dateTime);
-		} else if ( this.options.format === "time24" ) {
-			dateTimeStr = to24HourTimeString(dateTime);
-		} else {
-			dateTimeStr = dateTime.toLocaleString();
+		} catch (err) {
+			this.errors.push({
+				datetime: (new Date()).toLocaleString(),
+				type: err.name,
+				message: err.message
+			});
+			return true;
 		}
-        for (var i = 0, j = this.elements.length; i < j; i++) {
-          this.elements[i].node.innerHTML = dateTimeStr;
-        }
 		return this;
     }
 };

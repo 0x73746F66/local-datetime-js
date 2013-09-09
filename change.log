@@ -35,3 +35,16 @@
 2013-09-09 | bug fix re-running .init() now resets elements property appropriately.
 2013-09-09 | bug fix for .refresh() method, now uses the set default format appropriately
 ### VERSION 0.3 released ###
+2013-09-10 | added try/catch logging to errors property silently for debugging
+2013-09-10 | merged the "getter" and "setter" methods for format, now omit the argument to call as the "getter" or include the argument to call as the "setter"
+2013-09-10 | introduced options enableTitle and titleFormat
+2013-09-10 | introduced methods .enableTitle() and .titleFormat() where the later is a "getter" and "setter" for titleFormat option.
+2013-09-10 | methods .refresh() and .init() can set the title attribute using the set titleFormat if enabled
+2013-09-10 | introduced the "now" Date object which provides each node an identical object where the date is this instant rather than the datetime attribute
+2013-09-10 | both constructor and .init() Callback provide access to "now" Date object
+2013-09-10 | support added for element specific meta configuration of format and titleFormat via data-bind attribute: data-bind="{ format:'full',titleFormat:'local' }" 
+2013-09-10 | removed many usages of Date.parse() calling a step earlier to prevent the duplication
+2013-09-10 | property name original change to milliseconds appropriately
+2013-09-10 | updated .refresh() method to fully use the now object in it iteration
+2013-09-10 | removed duplicated code private functions from .refresh() method.
+### VERSION 0.4 released ###
