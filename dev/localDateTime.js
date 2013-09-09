@@ -1,6 +1,6 @@
 /**
  * @class localDateTime
- * @verson 0.2
+ * @verson 0.3
  * @author Christopher D Langton <chris@codewiz.biz>
  * @classDescription Convert Dates and Times to users local
  * @compatibility:
