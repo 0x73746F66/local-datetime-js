@@ -48,3 +48,8 @@
 2013-09-10 | updated .refresh() method to fully use the now object in it iteration
 2013-09-10 | removed duplicated code private functions from .refresh() method.
 ### VERSION 0.4 released ###
+2013-09-10 | milliseconds removed from allowed formats
+2013-09-10 | allowed formats now refer to a callable function that returns the formatted value when needed.
+2013-09-10 | the metadata is available to Callback and is included in the elements property
+2013-09-10 | reworked .refresh() for performance
+### VERSION 0.4.1 released ###

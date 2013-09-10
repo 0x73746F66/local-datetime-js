@@ -1,6 +1,6 @@
 /**
  * @class localDateTime
- * @verson 0.4
+ * @verson 0.4.1
  * @author Christopher D Langton <chris@codewiz.biz>
  * @classDescription Convert Dates and Times to users local
  * @compatibility:
@@ -33,7 +33,7 @@ var ConvertDateTimes = function(arg,fn) {
 			format: 'local',
 			enableTitle: true,
 			titleFormat: 'full',
-			allow: ['milliseconds','full','local','utc','iso','time','time12','time24']
+			allow: ['full','local','utc','iso','time','time12','time24']
 		};
 		/**
 		 * @property timezoneOffset
@@ -228,12 +228,11 @@ ConvertDateTimes.fn = ConvertDateTimes.prototype = {
 			  nowObj.milliseconds = Date.now();
 			};
 			if (this.elements.length > 0) this.elements = [];
+			var obj,data;
 			for (var i = 0, j = timeElements.length; i < j; i++) {
 			  _set(timeElements[i].getAttribute('datetime'));
-			  if ('function' === typeof fn ) {
-				fn(timeElements[i],dateObj,nowObj);
-			  } else if ( timeElements[i].hasAttribute("data-bind") ) {
-				eval('var data='+timeElements[i].getAttribute("data-bind"));
+			  if ( timeElements[i].hasAttribute("data-bind") ) {
+				eval('data='+timeElements[i].getAttribute("data-bind"));
 				if ( 'object' === typeof data && 'undefined' !== typeof data.format && this.isValidFormat(data.format) ) {
 					timeElements[i].innerHTML = dateObj[data.format]();
 				} else {
@@ -252,11 +251,18 @@ ConvertDateTimes.fn = ConvertDateTimes.prototype = {
 					timeElements[i].title = dateObj[this.options.titleFormat]();
 				}
 			  }
-			  this.elements.push({
+			  if ('function' === typeof fn && 'object' !== typeof data ) {
+				fn(timeElements[i],dateObj,nowObj);
+			  } else if ('function' === typeof fn && 'object' === typeof data ) {
+				fn(timeElements[i],dateObj,nowObj,data);
+			  }
+			  obj = {
 				  node: timeElements[i],
 				  times: dateObj,
 				  now: nowObj
-			  });
+			  };
+			  if ( 'object' === typeof data ) obj.data = data;
+			  this.elements.push(obj);
 			}
 		} catch (err) {
 			this.errors.push({
@@ -303,28 +309,11 @@ ConvertDateTimes.fn = ConvertDateTimes.prototype = {
 	 */
     refresh: function(){
 		try{
+			var data;
 			for (var i = 0, j = this.elements.length; i < j; i++) {
 				this.elements[i].now.milliseconds = Date.now();
-				if ( this.elements[i].node.hasAttribute("data-bind") ) {
-					eval('var data='+this.elements[i].node.getAttribute("data-bind"));
-					if ( 'object' === typeof data && 'undefined' !== typeof data.format && this.isValidFormat(data.format) ) {
-						this.elements[i].node.innerHTML = dateObj[data.format]();
-					} else {
-						this.elements[i].node.innerHTML = dateObj[this.options.format]();
-					}
-					if ( true === this.options.enableTitle ) {
-						if ( 'object' === typeof data && 'undefined' !== typeof data.titleFormat && this.isValidFormat(data.titleFormat) ) {
-							this.elements[i].node.title = dateObj[data.titleFormat]();
-						} else {
-							this.elements[i].node.title = dateObj[this.options.titleFormat]();
-						}
-					}
-				} else {
-					this.elements[i].node.innerHTML = this.elements[i].now[this.options.format]();
-					if ( true === this.options.enableTitle ) {
-						this.elements[i].node.title = this.elements[i].now[this.options.titleFormat]();
-					}
-				}
+				this.elements[i].node.innerHTML = this.elements[i].now[('undefined' !== typeof this.elements[i].data.format ? this.elements[i].data.format : this.options.format)]();
+				this.elements[i].node.title = this.elements[i].now[('undefined' !== typeof this.elements[i].data.titleFormat ? this.elements[i].data.titleFormat : this.options.titleFormat)]();
 			}
 		} catch (err) {
 			this.errors.push({
